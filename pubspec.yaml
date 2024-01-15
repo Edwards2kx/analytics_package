@@ -1,5 +1,5 @@
 name: analytics
-description: "A new Flutter package project."
+description: "Package to get analytic info from user device"
 version: 0.0.1
 homepage:
 
@@ -10,6 +10,28 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  
+  http: ^1.1.2
+
+  #DEVICE INFO
+  device_info_plus: ^9.1.1 #info device
+  system_info_plus: ^0.0.5 #BDS 3 - RAM
+  device_uuid: ^0.0.4 # UUID Android
+  disk_space_plus: ^0.2.3 #Storage memory
+
+  #LOCATION INFO
+  geolocator: ^9.0.2
+  geocoding: ^2.1.1 #return POI maybe not necesary with backend 
+
+  #CONNECTIVITY INFO
+  connectivity_plus: ^5.0.2 #network type
+
+  #WIFI NETWORKS INFO
+  wifi_hunter: ^1.1.1+2 #only android
+
+  #INSTALLED APPS INFO
+  device_apps: ^2.2.0
+  external_app_launcher: ^3.1.0
 
 dev_dependencies:
   flutter_test:

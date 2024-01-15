@@ -37,3 +37,44 @@ const like = 'sample';
 TODO: Tell users more about the package: where to find more information, how to
 contribute to the package, how to file issues, what response they can expect
 from the package authors, and more.
+
+
+configuracion de github
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/Edwards2kx/analytics_package.git
+git push -u origin main
+
+crear el servicio basico del paquete el cual se debe poder configurar el authority para facilidad
+y un key
+
+crear el singleton que devuelve la instacia y permite configurar el servicio
+
+hacer un llamado manual del servicio
+
+
+Crear la clase en singleton de AnalyticService, devolver la instancia.
+al inicializar recibe el path de donde enviar los datos, un booleano de si está o no activo
+los elementos que se desean escanear del movil, por defecto todos en true, 
+pensar en agregar algunas excepciones personalizadas, como la falta de permisos,
+o la falta de agregar elementos en el info.plist
+
+
+devolver como resultado la entidad infoAnalytics para ser usada dentro de la app
+en caso de requerir.
+
+#definir que se va a realizar con el listado de apps que llega desde el servidor
+almacenar en una preferencia local en modo lista?
+
+
+construir la respuesta de configuracion desde el servidor
+construir el modelo de la respuesta, donde llegan las aplicaciones a buscar en adnrodi
+
+
+agregar los permisos de android y de iOS
+documentar que se requeren dichos permisos para ciertas funcionalidades
+
+
+tener un metodo que se llamé inicializar o configurar y otro de obtener la instancia
