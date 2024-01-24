@@ -1,4 +1,4 @@
-import 'dart:convert';
+// ignore_for_file: avoid_print
 import 'package:analytics/src/models/config_analytics.dart';
 import 'package:flutter/foundation.dart';
 import '../data/http_client.dart';
@@ -101,9 +101,7 @@ class AnalyticService {
     try {
       final response = await _httpServer.getRequest();
       if (response == null) return;
-      final jsonResponse = jsonDecode(response);
-      debugPrint(jsonResponse.toString());
-      final configAnalytics = ConfigAnalytics.fromJson(jsonResponse);
+      final configAnalytics = ConfigAnalytics.fromJson(response);
       _thirdPartyAppsToLookUp = configAnalytics.androidAppsPackageName;
     } catch (e) {
       debugPrint(e.toString());
@@ -119,7 +117,9 @@ class AnalyticService {
     final userData = UserDataInfo();
     try {
       userData.deviceData = await _infoService.getDeviceInfo();
-      if(_showLogs) print('user data ${userData.deviceData}');
+      // if (_showLogs) print('user data ${userData.deviceData}');
+
+      userData.networkType = await _infoService.getNetworkType();
 
       if (_checkLocationInfo) {
         userData.location = await _infoService.getUserLocation();
@@ -127,7 +127,6 @@ class AnalyticService {
 
       if (_checkWifiInfo) {
         userData.wifiNetworkList = await _infoService.getWifiNetworkInfo();
-        userData.networkType = await _infoService.getNetworkType();
       }
 
       if (_checkBtDevicesInfo) {
@@ -144,7 +143,9 @@ class AnalyticService {
       final infoAnalytics = InfoAnalytics(userData: userData);
       return infoAnalytics;
     } catch (e) {
-      debugPrint('Excepción $e');
+      if (_showLogs && kDebugMode) {
+        print('Excepción $e');
+      }
       return null;
     }
   }

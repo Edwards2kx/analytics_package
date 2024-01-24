@@ -67,5 +67,14 @@ void main() {
       //Assert
       expect(response, isTrue);
     });
+
+    test('decode third party apps', () async {
+        final response = await client.getRequest();
+        if (response == null) return null;
+         final configAnalytics = ConfigAnalytics.fromJson(response);
+        print(configAnalytics.androidAppsPackageName);
+        expect(configAnalytics.androidAppsPackageName.length, greaterThan(0));
+
+    });
   });
 }

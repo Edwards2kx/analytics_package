@@ -2,7 +2,8 @@ import 'dart:convert';
 
 class ConfigAnalytics {
   List<String> androidAppsPackageName = [];
-  ConfigAnalytics({androidAppsPackageName});
+  ConfigAnalytics({List<String>? androidAppsPackageName})
+      : androidAppsPackageName = androidAppsPackageName ?? [];
 
   factory ConfigAnalytics.fromMap(Map<String, dynamic> map) {
     return ConfigAnalytics(
