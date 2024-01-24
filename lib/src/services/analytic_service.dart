@@ -28,8 +28,7 @@ class AnalyticService {
       bool checkWifiInfo = true,
       bool checkBtDevicesInfo = true,
       bool checkThirdPartyApps = true,
-      bool showLogs = false
-      })
+      bool showLogs = false})
       : _checkLocationInfo = checkLocationInfo,
         _checkWifiInfo = checkWifiInfo,
         _checkBtDevicesInfo = checkBtDevicesInfo,
@@ -52,8 +51,7 @@ class AnalyticService {
       bool checkWifiInfo = true,
       bool checkBtDevicesInfo = true,
       bool checkThirdPartyApps = true,
-       bool showLogs = false
-      }) {
+      bool showLogs = false}) {
     _instance ??= AnalyticService._internal(
         host: host,
         serverKey: serverKey,
@@ -61,8 +59,7 @@ class AnalyticService {
         checkWifiInfo: checkWifiInfo,
         checkBtDevicesInfo: checkBtDevicesInfo,
         checkThirdPartyApps: checkThirdPartyApps,
-        showLogs: showLogs
-        );
+        showLogs: showLogs);
     return _instance!;
   }
 
@@ -74,8 +71,8 @@ class AnalyticService {
     return _instance;
   }
 
-///Ejecuta la acción del servicio, de obtener información de configuración desde el servidor, 
-///capturar los datos de analitica del usuario y luego enviarlos al servidor.
+  ///Ejecuta la acción del servicio, de obtener información de configuración desde el servidor,
+  ///capturar los datos de analitica del usuario y luego enviarlos al servidor.
   Future<bool> call() async {
     if (_busyWorking) return false;
     _busyWorking = true;
@@ -85,9 +82,9 @@ class AnalyticService {
       await _getConfigFromServer();
       final infoAnalytics = await _getInfoAnalytic();
       final requestBody = infoAnalytics?.toJson();
-          if (_showLogs) {
-      debugPrint('request body \n$requestBody');
-    }
+      if (_showLogs) {
+        debugPrint('request body \n$requestBody');
+      }
       response = await _httpServer.postRequest(requestBody);
     } catch (e) {
       debugPrint(e.toString());
@@ -98,8 +95,8 @@ class AnalyticService {
     return response;
   }
 
-///Hace una llamada al servidor para obtener datos de configuración del servicio de analitica,
-///recibe el listado de las apps que se revisará si están instaladas en el dispositivo Android.
+  ///Hace una llamada al servidor para obtener datos de configuración del servicio de analitica,
+  ///recibe el listado de las apps que se revisará si están instaladas en el dispositivo Android.
   Future<void> _getConfigFromServer() async {
     try {
       final response = await _httpServer.getRequest();
@@ -116,14 +113,13 @@ class AnalyticService {
   ///Obtiene la información de analytica del dispositivo, hace uso de la clase [AnalyticServiceHelper].
   ///retorna un objeto [InfoAnalytics] con la información que será enviada al servidor.
   ///
-  ///Hace uso de los valores booleanos de configuración en caso de que se quierá obtener solo parte de 
+  ///Hace uso de los valores booleanos de configuración en caso de que se quierá obtener solo parte de
   ///la analytica por motivos de permisos del usuario.
   Future<InfoAnalytics?> _getInfoAnalytic() async {
     final userData = UserDataInfo();
     try {
       userData.deviceData = await _infoService.getDeviceInfo();
-
-      userData.networkType = await _infoService.getNetworkType();
+      if(_showLogs) print('user data ${userData.deviceData}');
 
       if (_checkLocationInfo) {
         userData.location = await _infoService.getUserLocation();
@@ -131,6 +127,7 @@ class AnalyticService {
 
       if (_checkWifiInfo) {
         userData.wifiNetworkList = await _infoService.getWifiNetworkInfo();
+        userData.networkType = await _infoService.getNetworkType();
       }
 
       if (_checkBtDevicesInfo) {
