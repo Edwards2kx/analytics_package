@@ -51,14 +51,18 @@ class AnalyticService {
       bool checkLocationInfo = true,
       bool checkWifiInfo = true,
       bool checkBtDevicesInfo = true,
-      bool checkThirdPartyApps = true}) {
+      bool checkThirdPartyApps = true,
+       bool showLogs = false
+      }) {
     _instance ??= AnalyticService._internal(
         host: host,
         serverKey: serverKey,
         checkLocationInfo: checkLocationInfo,
         checkWifiInfo: checkWifiInfo,
         checkBtDevicesInfo: checkBtDevicesInfo,
-        checkThirdPartyApps: checkThirdPartyApps);
+        checkThirdPartyApps: checkThirdPartyApps,
+        showLogs: showLogs
+        );
     return _instance!;
   }
 
