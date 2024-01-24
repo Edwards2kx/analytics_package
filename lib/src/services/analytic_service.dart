@@ -13,6 +13,7 @@ class AnalyticService {
   final bool _checkThirdPartyApps;
   final AnalyticServiceHelper _infoService = AnalyticServiceHelper();
   final CustomHttpClient _httpServer;
+  final bool _showLogs;
   List<String> _thirdPartyAppsToLookUp = [];
 
   ///Parametro interno que indica si el servicio ya se encuentra en ejecución.
@@ -26,11 +27,14 @@ class AnalyticService {
       bool checkLocationInfo = true,
       bool checkWifiInfo = true,
       bool checkBtDevicesInfo = true,
-      bool checkThirdPartyApps = true})
+      bool checkThirdPartyApps = true,
+      bool showLogs = false
+      })
       : _checkLocationInfo = checkLocationInfo,
         _checkWifiInfo = checkWifiInfo,
         _checkBtDevicesInfo = checkBtDevicesInfo,
         _checkThirdPartyApps = checkThirdPartyApps,
+        _showLogs = showLogs,
         assert(host.isNotEmpty, 'Host parameter must not be empty'),
         assert(host.startsWith('http://') || host.startsWith('https://'),
             'Host parameter should start with the http or https schema'),
@@ -72,10 +76,14 @@ class AnalyticService {
     if (_busyWorking) return false;
     _busyWorking = true;
     bool? response = false;
+
     try {
       await _getConfigFromServer();
       final infoAnalytics = await _getInfoAnalytic();
       final requestBody = infoAnalytics?.toJson();
+          if (_showLogs) {
+      debugPrint('request body \n$requestBody');
+    }
       response = await _httpServer.postRequest(requestBody);
     } catch (e) {
       debugPrint(e.toString());

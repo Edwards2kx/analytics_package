@@ -78,3 +78,32 @@ documentar que se requeren dichos permisos para ciertas funcionalidades
 
 
 tener un metodo que se llamé inicializar o configurar y otro de obtener la instancia
+
+
+para importarlo dentro de un proyecto agregar lo siguiente dentro del archivo pubspec.yaml
+reemplazar el usuario y repositorio dentro de la url por los que correspondan al repositorio
+donde se encuentra alojado en package.
+
+dependencies:
+  mi_paquete_personal:
+    git:
+      url: https://github.com/tu-usuario/mi_paquete_personal
+      ref: main
+
+ejemplo: 
+  analytics:
+    git:
+      url: https://github.com/Edwards2kx/analytics_package.git
+      ref: main
+
+
+la versión minima para android debe ser la 21, para cambiarla ir al directorio
+root/android/app/build.gradle:
+en donde se encuentra la versión minima "minSDKVersion flutter.minSdkVersion", establecer 21 o superior.                                                                                       │
+│ android {                                                                                     │
+│   defaultConfig {                                                                             │
+│     minSdkVersion 21                                                                          │
+│   }                                                                                           │
+│ }     
+commodo_flutterflow@yopmail.com
+aliado@yopmail.com
