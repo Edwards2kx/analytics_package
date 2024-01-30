@@ -69,7 +69,7 @@ class AnalyticServiceHelper {
         locationPermission == LocationPermission.whileInUse) {
       try {
         final poiInfo = await Geolocator.getCurrentPosition();
-        
+
         LocationInfo location = LocationInfo(
             latitute: poiInfo.latitude,
             longitude: poiInfo.longitude,
@@ -82,7 +82,6 @@ class AnalyticServiceHelper {
           List<Placemark> placemarks = await placemarkFromCoordinates(
               poiInfo.latitude, poiInfo.longitude);
           if (placemarks.isNotEmpty) {
-
             location.administrativeArea = placemarks[0].administrativeArea;
             location.country = placemarks[0].country;
             location.locality = placemarks[0].locality;
@@ -140,32 +139,28 @@ class AnalyticServiceHelper {
   Future<List<BTDeviceInfo>> getBTDevicesInfo() async {
     final simplebluePlugin = Simpleblue();
     final List<BTDeviceInfo> btScannedDevices = [];
+
     try {
-      final devices = await simplebluePlugin.getDevices();
       final permision = await Geolocator.checkPermission();
       if (permision != LocationPermission.always &&
           permision != LocationPermission.whileInUse) return [];
-
       //Si el bt está apagado lo enciende momentaneamente
-      final blueIsOn = await simplebluePlugin.isTurnedOn() ?? false;
-      if (!blueIsOn) {
-        simplebluePlugin.turnOn();
-      }
+      final wasBlueOn = await simplebluePlugin.isTurnedOn() ?? false;
+      if (!wasBlueOn) simplebluePlugin.turnOn();
+      
+      final devices = await simplebluePlugin.getDevices();
       for (var device in devices) {
         btScannedDevices.add(
           BTDeviceInfo(uuid: device.uuid, name: device.name ?? ''),
         );
       }
       //si estaba apagado lo vuelve a dejar como estaba
-      if (!blueIsOn) {
-        simplebluePlugin.turnOff();
-      }
+      if (!wasBlueOn) simplebluePlugin.turnOff();
+      return btScannedDevices;
     } catch (e) {
       debugPrint('exception on bluetooth scan $e');
       return [];
     }
-
-    return [];
   }
 
   Future<List<InstalledAppInfo>?> getInstalledAppsInfo(
