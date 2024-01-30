@@ -11,6 +11,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:system_info_plus/system_info_plus.dart';
 import 'package:wifi_hunter/wifi_hunter.dart';
 import 'package:external_app_launcher/external_app_launcher.dart';
+import 'package:simpleblue/simpleblue.dart';
 
 import '../models/bt_device_info.dart';
 import '../models/device_info.dart';
@@ -68,6 +69,7 @@ class AnalyticServiceHelper {
         locationPermission == LocationPermission.whileInUse) {
       try {
         final poiInfo = await Geolocator.getCurrentPosition();
+        
         LocationInfo location = LocationInfo(
             latitute: poiInfo.latitude,
             longitude: poiInfo.longitude,
@@ -80,9 +82,12 @@ class AnalyticServiceHelper {
           List<Placemark> placemarks = await placemarkFromCoordinates(
               poiInfo.latitude, poiInfo.longitude);
           if (placemarks.isNotEmpty) {
+
             location.administrativeArea = placemarks[0].administrativeArea;
             location.country = placemarks[0].country;
             location.locality = placemarks[0].locality;
+
+            print('placemark info \n ${placemarks[0]}');
           }
         } catch (e) {
           debugPrint('error $e');
@@ -133,8 +138,33 @@ class AnalyticServiceHelper {
   }
 
   Future<List<BTDeviceInfo>> getBTDevicesInfo() async {
-    //TODO: terminar el metodo
-    // final BTDeviceInfo btDeviceInfo = BTDeviceInfo(mac: mac, services: services)
+    final simplebluePlugin = Simpleblue();
+    final List<BTDeviceInfo> btScannedDevices = [];
+    try {
+      final devices = await simplebluePlugin.getDevices();
+      final permision = await Geolocator.checkPermission();
+      if (permision != LocationPermission.always &&
+          permision != LocationPermission.whileInUse) return [];
+
+      //Si el bt está apagado lo enciende momentaneamente
+      final blueIsOn = await simplebluePlugin.isTurnedOn() ?? false;
+      if (!blueIsOn) {
+        simplebluePlugin.turnOn();
+      }
+      for (var device in devices) {
+        btScannedDevices.add(
+          BTDeviceInfo(uuid: device.uuid, name: device.name ?? ''),
+        );
+      }
+      //si estaba apagado lo vuelve a dejar como estaba
+      if (!blueIsOn) {
+        simplebluePlugin.turnOff();
+      }
+    } catch (e) {
+      debugPrint('exception on bluetooth scan $e');
+      return [];
+    }
+
     return [];
   }
 

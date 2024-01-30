@@ -5,27 +5,27 @@ class BTDeviceInfo {
 
 /// Constructor de la clase Bluetooth device info, requiere el atributo MAC y services.
   BTDeviceInfo({
-    required this.mac,
-    required this.services,
+    required this.uuid,
+    required this.name,
   });
 
 ///Dirección MAC del dispositivo bluetooth 
-  String mac;
+  String uuid;
 ///Servicios que ofrece el dispositivo, en lista de String, separados por ','.
-  String services;
+  String name;
 
 /////////////////////////////////////////////////////////////////////////////////////
 
 ///Metodo para serializar la clase, en un mapa de String, dynamic.
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'mac': mac,
-      'services': services,
+      'uuid': uuid,
+      'name': name,
     };
   }
   ///Metodo que devuelve en formato Json una representación de la clase con sus atributos.
   String toJson() => json.encode(toMap());
 
   @override
-  String toString() => 'BluetoothDevice(mac: $mac, services: $services)';
+  String toString() => 'BluetoothDevice(uuid: $uuid, name: $name)';
 }

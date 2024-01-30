@@ -105,5 +105,33 @@ en donde se encuentra la versión minima "minSDKVersion flutter.minSdkVersion", 
 │     minSdkVersion 21                                                                          │
 │   }                                                                                           │
 │ }     
+
+
+para obtener información de la ubicación se debe solicitar el permiso de ubicación....
+se recomienda el uso del paquete:
+
+para android
+
+agregar al android_manifest.xml lo siguiente por fuera de la etiqueta <aplication>
+
+
+
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+<uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+probar el package https://pub.dev/packages/simpleblue 
+
+
+para bluetooth agregar los siguientes permisos al android manifest
+
+
+
+
+
 commodo_flutterflow@yopmail.com
 aliado@yopmail.com

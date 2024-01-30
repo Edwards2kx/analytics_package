@@ -1,6 +1,6 @@
 name: analytics
 description: "Package to get analytic info from user device"
-version: 0.0.4
+version: 0.0.5
 homepage:
 
 environment:
@@ -32,6 +32,7 @@ dependencies:
   #INSTALLED APPS INFO
   device_apps: ^2.2.0
   external_app_launcher: ^3.1.0
+  simpleblue: ^0.2.0
 
 dev_dependencies:
   flutter_test:
