@@ -10,7 +10,7 @@ class InfoAnalytics {
 
   InfoAnalytics({
     required this.userData,
-  }) : uniqueId = userData.deviceData?.identifier;
+  }) : uniqueId = userData.deviceData?.deviceId;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{

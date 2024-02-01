@@ -12,7 +12,6 @@ import 'package:wifi_hunter/wifi_hunter.dart';
 import 'package:simpleblue/simpleblue.dart';
 
 import '../models/bt_device_info.dart';
-import '../constants/financial_apps_ios.dart';
 import '../models/device_info.dart';
 import '../models/installed_app_info.dart';
 import '../models/location_info.dart';
@@ -30,7 +29,7 @@ class AnalyticServiceHelper {
       final ramSize = await SystemInfoPlus.physicalMemory;
       final AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
       return DeviceInfo(
-        identifier: uuid,
+        deviceId: uuid,
         cpu: androidInfo.board,
         manufacturer: androidInfo.manufacturer,
         model: androidInfo.model,
@@ -47,7 +46,7 @@ class AnalyticServiceHelper {
       final ramSize = await SystemInfoPlus.physicalMemory;
       final IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
       final deviceData = DeviceInfo(
-        identifier: iosInfo.identifierForVendor,
+        deviceId: iosInfo.identifierForVendor,
         cpu: iosInfo.localizedModel,
         manufacturer: 'Apple',
         model: iosInfo.model,

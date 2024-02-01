@@ -10,7 +10,7 @@ class DeviceInfo {
       required this.model,
       required this.cpu,
       required this.isPhysicalDevice,
-      this.identifier,
+      this.deviceId,
       this.totalStorage,
       this.freeStorage,
       this.ramSize});
@@ -32,7 +32,7 @@ class DeviceInfo {
 
   ///Identificador unico del dispositivo, en ios retorna el identificador asignado por apple
   ///en android devuelve un UUID generado.
-  String? identifier;
+  String? deviceId;
 
   ///Almacenamiento total del dispositivo en MB.
   double? totalStorage;
@@ -54,7 +54,7 @@ class DeviceInfo {
       'manufacturer': manufacturer,
       'model': model,
       'cpu': cpu,
-      'identifier': identifier,
+      'device_id': deviceId,
       'total_storage': totalStorage,
       'free_storage': freeStorage,
       'ram_size': ramSize,
@@ -67,6 +67,6 @@ class DeviceInfo {
 
   @override
   String toString() {
-    return 'DeviceData(operativeSystem: $operativeSystem, soVersion: $soVersion, manufacturer: $manufacturer, model: $model, cpu: $cpu, identifier: $identifier, totalStorage: $totalStorage, freeStorage: $freeStorage, ramSize: $ramSize, isPhysicalDevice: $isPhysicalDevice)';
+    return 'DeviceData(operativeSystem: $operativeSystem, soVersion: $soVersion, manufacturer: $manufacturer, model: $model, cpu: $cpu, deviceId: $deviceId, totalStorage: $totalStorage, freeStorage: $freeStorage, ramSize: $ramSize, isPhysicalDevice: $isPhysicalDevice)';
   }
 }

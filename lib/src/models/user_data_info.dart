@@ -1,8 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:analytics/src/models/third_party_app_item.dart';
-
 import 'bt_device_info.dart';
 import 'device_info.dart';
 import 'installed_app_info.dart';
