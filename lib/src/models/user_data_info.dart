@@ -31,9 +31,8 @@ class UserDataInfo {
       'wifi_network_list': wifiNetworkList?.map((x) => x.toMap()).toList(),
       'device_data': deviceData?.toMap(),
       'network_type': networkType,
-      'bt_device_list' : btDeviceInfoList?.map((x) => x.toMap()).toList(),
+      'connected_devices_list' : btDeviceInfoList?.map((x) => x.toMap()).toList(),
       'installed_app_list' : installedAppList?.map((x) => x.toMap()).toList(),
-      // 'third_party_app_list': thirdPartyApps?.map((x) => x.toMap()).toList()
     };
   }
 
