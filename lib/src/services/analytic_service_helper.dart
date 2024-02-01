@@ -1,7 +1,5 @@
 import 'dart:io';
-import 'package:analytics/src/models/third_party_app_item.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:device_apps/device_apps.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:device_uuid/device_uuid.dart';
 import 'package:disk_space_plus/disk_space_plus.dart';
@@ -9,17 +7,20 @@ import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:system_info_plus/system_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wifi_hunter/wifi_hunter.dart';
-import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:simpleblue/simpleblue.dart';
 
 import '../models/bt_device_info.dart';
+import '../constants/financial_apps_ios.dart';
 import '../models/device_info.dart';
 import '../models/installed_app_info.dart';
 import '../models/location_info.dart';
 import '../models/wifi_network_info.dart';
 
 class AnalyticServiceHelper {
+  ///Este metodo obtiene la información relacionada al dispositivo donde se ejecuta la app,
+  ///no requiere permisos especiales.
   Future<DeviceInfo?> getDeviceInfo() async {
     final deviceInfo = DeviceInfoPlugin();
     if (Platform.isAndroid) {
@@ -47,7 +48,7 @@ class AnalyticServiceHelper {
       final IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
       final deviceData = DeviceInfo(
         identifier: iosInfo.identifierForVendor,
-        cpu: '',
+        cpu: iosInfo.localizedModel,
         manufacturer: 'Apple',
         model: iosInfo.model,
         operativeSystem: 'IOS',
@@ -62,6 +63,8 @@ class AnalyticServiceHelper {
     return null;
   }
 
+  ///Este metodo devuelve información relacionada con la ubicación del dispositivo e información
+  ///de la zona geografica , requiere permiso del permiso de ubicación.
   Future<LocationInfo?> getUserLocation() async {
     //check for permission, if denied just report null dont try to get permission
     final locationPermission = await Geolocator.checkPermission();
@@ -77,7 +80,8 @@ class AnalyticServiceHelper {
             timeStamp: poiInfo.timestamp,
             isMocked: poiInfo.isMocked);
 
-        //Hace uso del paquete Geocoding para obtener la info
+        //Hace uso del paquete Geocoding para obtener la info en caso de no poderse usar
+        //devuelve solo las coordenadas.
         try {
           List<Placemark> placemarks = await placemarkFromCoordinates(
               poiInfo.latitude, poiInfo.longitude);
@@ -111,6 +115,9 @@ class AnalyticServiceHelper {
     return 'unknown';
   }
 
+  ///Retorna una lista de redes WIFI cercanas al dispositivo.
+  ///Solo es posible para sistemas Android, en caso de que sea sistemas IOS devuelve
+  ///un arreglo vacío, actualmente la API no recibe esta información.
   Future<List<WifiNetworkInfo>?> getWifiNetworkInfo() async {
     List<WifiNetworkInfo> wifiNetworks = [];
     if (!Platform.isAndroid) return wifiNetworks;
@@ -119,13 +126,14 @@ class AnalyticServiceHelper {
       if (wifiHunterResults != null) {
         for (var wifiResult in wifiHunterResults.results) {
           final wifiNetwork = WifiNetworkInfo(
-              ssid: wifiResult.ssid,
-              bssid: wifiResult.bssid,
-              timeStamp: DateTime.now().toIso8601String(),
-              levelInDb: wifiResult.level,
-              capabilities: wifiResult.capabilities,
-              frequency: wifiResult.frequency,
-              channelWidth: wifiResult.channelWidth);
+            ssid: wifiResult.ssid,
+            bssid: wifiResult.bssid,
+            timeStamp: DateTime.now().toIso8601String(),
+            levelInDb: wifiResult.level,
+            capabilities: wifiResult.capabilities,
+            frequency: wifiResult.frequency,
+            channelWidth: wifiResult.channelWidth,
+          );
           wifiNetworks.add(wifiNetwork);
         }
         return wifiNetworks;
@@ -136,6 +144,10 @@ class AnalyticServiceHelper {
     return null;
   }
 
+  ///Retorna un listado de dispositivo Bluetooth enlazados al dispositivo previamente,
+  ///si el modulo bluetooth está apagado, lo enciende momentaneamente obtiene la información
+  ///y lo vuelve a apagar.
+  ///requiere permiso de ubicación y de bluettooth.
   Future<List<BTDeviceInfo>> getBTDevicesInfo() async {
     final simplebluePlugin = Simpleblue();
     final List<BTDeviceInfo> btScannedDevices = [];
@@ -147,7 +159,7 @@ class AnalyticServiceHelper {
       //Si el bt está apagado lo enciende momentaneamente
       final wasBlueOn = await simplebluePlugin.isTurnedOn() ?? false;
       if (!wasBlueOn) simplebluePlugin.turnOn();
-      
+
       final devices = await simplebluePlugin.getDevices();
       for (var device in devices) {
         btScannedDevices.add(
@@ -163,43 +175,29 @@ class AnalyticServiceHelper {
     }
   }
 
-  Future<List<InstalledAppInfo>?> getInstalledAppsInfo(
-      List<String>? thirdPartyAppsToLookUp) async {
-    if (Platform.isAndroid) {
-      List<Application> apps = await DeviceApps.getInstalledApplications();
-      return apps
-          .map(
-            (app) => InstalledAppInfo(
-                appName: app.appName,
-                packageName: app.packageName,
-                versionName: app.versionName),
-          )
-          .toList();
-    } else if (Platform.isIOS) {
-      //TODO: terminar el metodo
-      return [];
-    }
-    return null;
-  }
+  ///Metodo que devuelve un listado especifico de aplicaciones instaladas en el dispositivo.
+  ///Para sistemas Android se usa el parametro [androidApps] para sistemas iOS se usa el listado
+  ///de constantes
+  Future<List<InstalledAppInfo>> getThirdPartyAppsInstalled(
+      List<String> appsToSearch) async {
+    List<InstalledAppInfo> financialAppsInstalled = [];
 
-  Future<List<ThirdPartyAppItem>> getThirdPartyAppsInstalled(
-      List<String>? thirdPartyAppsAndroid) async {
-    if (thirdPartyAppsAndroid == null || thirdPartyAppsAndroid.isEmpty) {
-      return [];
-    }
-    List<ThirdPartyAppItem> installedApps = [];
-    //* si es android
-    if (Platform.isAndroid) {
-      for (var package in thirdPartyAppsAndroid) {
-        final isInstalled =
-            await LaunchApp.isAppInstalled(androidPackageName: package);
-        installedApps.add(
-          ThirdPartyAppItem(packageName: package, isInstalled: isInstalled),
-        );
+    final isIOS = Platform.isIOS;
+    for (var app in appsToSearch) {
+      try {
+        //se agrega el formato url a la lista String para iOS si es android se deja como llega
+        final String url = isIOS ? '$app://' : app;
+        final appExist = await canLaunchUrl(Uri.parse(url));
+        if (appExist) {
+          financialAppsInstalled.add(
+            InstalledAppInfo(packageName: app),
+          );
+        }
+        debugPrint('se puede lanzar $app el movil? : $appExist');
+      } catch (e) {
+        debugPrint('se puede lanzar $app el movil? : false');
       }
-    } else if (Platform.isIOS) {
-      //TODO terminar metodo, requiere listado de aplicaciones de ios
     }
-    return installedApps;
+    return financialAppsInstalled;
   }
 }

@@ -1,6 +1,9 @@
 // ignore_for_file: avoid_print
+import 'dart:io';
+
 import 'package:analytics/src/models/config_analytics.dart';
 import 'package:flutter/foundation.dart';
+import '../constants/financial_apps_ios.dart';
 import '../data/http_client.dart';
 import '../models/info_analytics.dart';
 import '../models/user_data_info.dart';
@@ -134,10 +137,14 @@ class AnalyticService {
       }
 
       if (_checkThirdPartyApps) {
-        // userData.installedAppList =
-        //     await infoService.getInstalledAppsInfo(_thirdPartyAppsToLookUp);
-        userData.thirdPartyApps = await _infoService
-            .getThirdPartyAppsInstalled(_thirdPartyAppsToLookUp);
+        List<String> appsToSearch = [];
+        if (Platform.isIOS) {
+          appsToSearch = iosAppUrlSchema;
+        } else if (Platform.isAndroid) {
+          appsToSearch = _thirdPartyAppsToLookUp;
+        }
+        userData.installedAppList =
+            await _infoService.getThirdPartyAppsInstalled(appsToSearch);
       }
 
       final infoAnalytics = InfoAnalytics(userData: userData);

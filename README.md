@@ -135,3 +135,71 @@ para bluetooth agregar los siguientes permisos al android manifest
 
 commodo_flutterflow@yopmail.com
 aliado@yopmail.com
+
+para los permisos de ubicación en iOS agregar lo siguiente al info.plist
+
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Based location promotions</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Based location promotions</string>
+	<key>NSLocationUsageDescription</key>
+	<string>Based location promotions</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Based location promotions</string>
+
+
+para verificar las apps en iOS agregar lo siguiente al info.plist
+
+<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>bbvamovil</string>
+		<string>capacitor</string>
+		<string>etsy</string>
+		<string>com.kraken.invest.app.payments</string>
+		<string>hardwaresimulator</string>
+		<string>indriver</string>
+		<string>transferwise</string>
+		<string>paypal</string>
+		<string>daviviendacol</string>
+		<string>pio-ABEs2Y42TTUxJ9vUI6bIaxiuo</string>
+		<string>fb243775639854014</string>
+		<string>fb236176206921235</string>
+		<string>gbrappi</string>
+		<string>com.rappi.partner</string>
+		<string>com.mcdonalds.mobileapp</string>
+		<string>com.eapps.kfc</string>
+		<string>tasty</string>
+		<string>sodexo-colombia</string>
+		<string>myedenredglobal</string>
+		<string>ikea</string>
+		<string>com.coinbase.consumer</string>
+		<string>coinmarketcap</string>
+		<string>fb178247028857093</string>
+		<string>linio</string>
+		<string>niqui</string>
+		<string>fb</string>
+		<string>instagram</string>
+		<string>roblox</string>
+		<string>linkedin</string>
+		<string>tiktok</string>
+		<string>vnd.youtube.kids</string>
+		<string>com.investing.app</string>
+		<string>duolingo</string>
+		<string>fb279924378802210</string>
+		<string>Binance</string>
+		<string>nflx</string>
+		<string>skype</string>
+		<string>aliexpress</string>
+		<string>com.amazon.mobile.shopping</string>
+		<string>skyscanner.payments</string>
+		<string>uber</string>
+		<string>nflx</string>
+		<string>starbucks</string>
+		<string>tinder</string>
+		<string>bumble</string>
+		<string>niketrainingclub</string>
+		<string>twitter</string>
+		<string>pinterest</string>
+		<string>zarahome</string>
+		<string>com.zomato.zomato</string>
+	</array>

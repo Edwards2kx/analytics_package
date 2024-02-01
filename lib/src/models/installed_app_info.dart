@@ -6,10 +6,7 @@ class InstalledAppInfo {
   final String packageName;
   final String? versionName;
 
-  InstalledAppInfo(
-      {required this.appName,
-      required this.packageName,
-      required this.versionName});
+  InstalledAppInfo({required this.packageName, this.appName, this.versionName});
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -20,5 +17,4 @@ class InstalledAppInfo {
   }
 
   String toJson() => json.encode(toMap());
-
 }

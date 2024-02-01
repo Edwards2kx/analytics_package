@@ -1,5 +1,9 @@
 import 'dart:convert';
 
+/// Esta clase recibe la configuración desde el servidor, donde actualmente solo
+/// se recibe la lista de aplicaciones de terceros o apps financieras para ser
+/// identificadas en sistemas Android.
+/// 
 class ConfigAnalytics {
   List<String> androidAppsPackageName = [];
   ConfigAnalytics({List<String>? androidAppsPackageName})
