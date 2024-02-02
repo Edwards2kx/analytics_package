@@ -1,5 +1,6 @@
 import 'package:analytics/src/data/http_client.dart';
 import 'package:analytics/src/models/config_analytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -72,7 +73,7 @@ void main() {
         final response = await client.getRequest();
         if (response == null) return null;
          final configAnalytics = ConfigAnalytics.fromJson(response);
-        print(configAnalytics.androidAppsPackageName);
+        debugPrint('${configAnalytics.androidAppsPackageName}');
         expect(configAnalytics.androidAppsPackageName.length, greaterThan(0));
 
     });

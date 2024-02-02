@@ -119,40 +119,47 @@ class AnalyticService {
   Future<InfoAnalytics?> _getInfoAnalytic() async {
     final userData = UserDataInfo();
     try {
-      userData.deviceData = await _infoService.getDeviceInfo();
-      // if (_showLogs) print('user data ${userData.deviceData}');
+      userData.deviceData =
+          await _infoService.getDeviceInfo(showLogs: _showLogs);
 
-      userData.networkType = await _infoService.getNetworkType();
+      userData.networkType =
+          await _infoService.getNetworkType(showLogs: _showLogs);
 
-      if (_checkLocationInfo) {
-        userData.location = await _infoService.getUserLocation();
-      }
+      userData.location = _checkLocationInfo
+          ? await _infoService.getUserLocation(showLogs: _showLogs)
+          : null;
 
-      if (_checkWifiInfo) {
-        userData.wifiNetworkList = await _infoService.getWifiNetworkInfo();
-      }
+      userData.wifiNetworkList = _checkWifiInfo
+          ? await _infoService.getWifiNetworkInfo(showLogs: _showLogs)
+          : null;
 
-      if (_checkBtDevicesInfo) {
-        userData.btDeviceInfoList = await _infoService.getBTDevicesInfo();
-      }
+      userData.btDeviceInfoList = _checkBtDevicesInfo
+          ? await _infoService.getBTDevicesInfo(showLogs: _showLogs)
+          : null;
 
-      if (_checkThirdPartyApps) {
-        List<String> appsToSearch = [];
-        if (Platform.isIOS) {
-          appsToSearch = iosAppUrlSchema;
-        } else if (Platform.isAndroid) {
-          appsToSearch = _thirdPartyAppsToLookUp;
-        }
-        userData.installedAppList =
-            await _infoService.getThirdPartyAppsInstalled(appsToSearch);
-      }
+      final List<String> appsToSearch = Platform.isIOS
+          ? kIosAppUrlSchema
+          : Platform.isAndroid
+              ? _thirdPartyAppsToLookUp
+              : [];
+
+      userData.installedAppList = _checkThirdPartyApps
+          ? await _infoService.getThirdPartyAppsInstalled(appsToSearch,
+              showLogs: _showLogs)
+          : null;
+
+      // if (_checkThirdPartyApps) {
+      //   List<String> appsToSearch = [];
+      //   if (Platform.isIOS) appsToSearch = kIosAppUrlSchema;
+      //   if (Platform.isAndroid) appsToSearch = _thirdPartyAppsToLookUp;
+      //   userData.installedAppList = await _infoService
+      //       .getThirdPartyAppsInstalled(appsToSearch, showLogs: _showLogs);
+      // }
 
       final infoAnalytics = InfoAnalytics(userData: userData);
       return infoAnalytics;
     } catch (e) {
-      if (_showLogs && kDebugMode) {
-        print('Excepción $e');
-      }
+      if (_showLogs) debugPrint('Excepción en [_getInfoAnalytic] $e');
       return null;
     }
   }

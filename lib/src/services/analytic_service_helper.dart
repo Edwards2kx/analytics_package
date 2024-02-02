@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:device_apps/device_apps.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:device_uuid/device_uuid.dart';
 import 'package:disk_space_plus/disk_space_plus.dart';
@@ -20,7 +21,9 @@ import '../models/wifi_network_info.dart';
 class AnalyticServiceHelper {
   ///Este metodo obtiene la información relacionada al dispositivo donde se ejecuta la app,
   ///no requiere permisos especiales.
-  Future<DeviceInfo?> getDeviceInfo() async {
+  Future<DeviceInfo?> getDeviceInfo({bool showLogs = false}) async {
+    if (!Platform.isAndroid && !Platform.isIOS) return null;
+
     final deviceInfo = DeviceInfoPlugin();
     if (Platform.isAndroid) {
       final uuid = await DeviceUuid().getUUID();
@@ -64,9 +67,9 @@ class AnalyticServiceHelper {
 
   ///Este metodo devuelve información relacionada con la ubicación del dispositivo e información
   ///de la zona geografica , requiere permiso del permiso de ubicación.
-  Future<LocationInfo?> getUserLocation() async {
-    //check for permission, if denied just report null dont try to get permission
+  Future<LocationInfo?> getUserLocation({bool showLogs = false}) async {
     final locationPermission = await Geolocator.checkPermission();
+
     if (locationPermission == LocationPermission.always ||
         locationPermission == LocationPermission.whileInUse) {
       try {
@@ -89,7 +92,8 @@ class AnalyticServiceHelper {
             location.country = placemarks[0].country;
             location.locality = placemarks[0].locality;
 
-            print('placemark info \n ${placemarks[0]}');
+            // if (showLogs) debugPrint('placemark info \n ${placemarks[0]}');
+            if (showLogs) debugPrint('placemark info \n $placemarks}');
           }
         } catch (e) {
           debugPrint('error $e');
@@ -104,7 +108,7 @@ class AnalyticServiceHelper {
     return null;
   }
 
-  Future<String> getNetworkType() async {
+  Future<String> getNetworkType({bool showLogs = false}) async {
     final connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile) {
       return 'mobile';
@@ -117,7 +121,8 @@ class AnalyticServiceHelper {
   ///Retorna una lista de redes WIFI cercanas al dispositivo.
   ///Solo es posible para sistemas Android, en caso de que sea sistemas IOS devuelve
   ///un arreglo vacío, actualmente la API no recibe esta información.
-  Future<List<WifiNetworkInfo>?> getWifiNetworkInfo() async {
+  Future<List<WifiNetworkInfo>?> getWifiNetworkInfo(
+      {bool showLogs = false}) async {
     List<WifiNetworkInfo> wifiNetworks = [];
     if (!Platform.isAndroid) return wifiNetworks;
     try {
@@ -138,7 +143,7 @@ class AnalyticServiceHelper {
         return wifiNetworks;
       }
     } catch (e) {
-      debugPrint('error $e');
+      debugPrint('excepción en [getWifiNetworkInfo] $e');
     }
     return null;
   }
@@ -147,7 +152,7 @@ class AnalyticServiceHelper {
   ///si el modulo bluetooth está apagado, lo enciende momentaneamente obtiene la información
   ///y lo vuelve a apagar.
   ///requiere permiso de ubicación y de bluettooth.
-  Future<List<BTDeviceInfo>> getBTDevicesInfo() async {
+  Future<List<BTDeviceInfo>> getBTDevicesInfo({bool showLogs = false}) async {
     final simplebluePlugin = Simpleblue();
     final List<BTDeviceInfo> btScannedDevices = [];
 
@@ -157,7 +162,7 @@ class AnalyticServiceHelper {
           permision != LocationPermission.whileInUse) return [];
       //Si el bt está apagado lo enciende momentaneamente
       final wasBlueOn = await simplebluePlugin.isTurnedOn() ?? false;
-      if (!wasBlueOn) simplebluePlugin.turnOn();
+      if (!wasBlueOn) await simplebluePlugin.turnOn();
 
       final devices = await simplebluePlugin.getDevices();
       for (var device in devices) {
@@ -166,10 +171,10 @@ class AnalyticServiceHelper {
         );
       }
       //si estaba apagado lo vuelve a dejar como estaba
-      if (!wasBlueOn) simplebluePlugin.turnOff();
+      if (!wasBlueOn) await simplebluePlugin.turnOff();
       return btScannedDevices;
     } catch (e) {
-      debugPrint('exception on bluetooth scan $e');
+      debugPrint('excepción en [getBTDevicesInfo] $e');
       return [];
     }
   }
@@ -178,23 +183,37 @@ class AnalyticServiceHelper {
   ///Para sistemas Android se usa el parametro [androidApps] para sistemas iOS se usa el listado
   ///de constantes
   Future<List<InstalledAppInfo>> getThirdPartyAppsInstalled(
-      List<String> appsToSearch) async {
+      List<String> appsToSearch,
+      {bool showLogs = false}) async {
     List<InstalledAppInfo> financialAppsInstalled = [];
 
-    final isIOS = Platform.isIOS;
+    if (!Platform.isAndroid && !Platform.isIOS) return [];
+
+    if (Platform.isAndroid) {
+      List<Application> apps = await DeviceApps.getInstalledApplications();
+      for (var package in apps) {
+        if (appsToSearch.contains(package.packageName)) {
+          financialAppsInstalled.add(
+            InstalledAppInfo(packageName: package.packageName),
+          );
+          if (showLogs)
+            debugPrint('se encontró ${package.packageName} en el movil');
+        }
+      }
+      return financialAppsInstalled;
+    }
+    // es IOS
     for (var app in appsToSearch) {
       try {
-        //se agrega el formato url a la lista String para iOS si es android se deja como llega
-        final String url = isIOS ? '$app://' : app;
-        final appExist = await canLaunchUrl(Uri.parse(url));
-        if (appExist) {
+        final String iosUrlSchema = '$app://';
+        if (await canLaunchUrl(Uri.parse(iosUrlSchema))) {
           financialAppsInstalled.add(
             InstalledAppInfo(packageName: app),
           );
         }
-        debugPrint('se puede lanzar $app el movil? : $appExist');
+        if (showLogs) debugPrint('se econtró $app en el movil');
       } catch (e) {
-        debugPrint('se puede lanzar $app el movil? : false');
+        debugPrint('excepción en metodo[getThirdPartyAppsInstalled] $e');
       }
     }
     return financialAppsInstalled;

@@ -1,4 +1,4 @@
-const List<String> iosAppUrlSchema = [
+const List<String> kIosAppUrlSchema = [
       'bbvamovil',
       'capacitor',
       'etsy',

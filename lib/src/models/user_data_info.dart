@@ -14,7 +14,7 @@ class UserDataInfo {
   DeviceInfo? deviceData;
   String? networkType;
   List<InstalledAppInfo>? installedAppList;
-  // List<ThirdPartyAppItem>? thirdPartyApps;
+  
   UserDataInfo({
     this.location,
     this.wifiNetworkList,
@@ -22,7 +22,6 @@ class UserDataInfo {
     this.networkType,
     this.btDeviceInfoList,
     this.installedAppList,
-    // this.thirdPartyApps
   });
 
   Map<String, dynamic> toMap() {
@@ -31,8 +30,9 @@ class UserDataInfo {
       'wifi_network_list': wifiNetworkList?.map((x) => x.toMap()).toList(),
       'device_data': deviceData?.toMap(),
       'network_type': networkType,
-      'connected_devices_list' : btDeviceInfoList?.map((x) => x.toMap()).toList(),
-      'installed_app_list' : installedAppList?.map((x) => x.toMap()).toList(),
+      'connected_devices_list':
+          btDeviceInfoList?.map((x) => x.toMap()).toList(),
+      'installed_app_list': installedAppList?.map((x) => x.toMap()).toList(),
     };
   }
 
@@ -40,12 +40,6 @@ class UserDataInfo {
 
   @override
   String toString() {
-    // return 'UserDataInfo(location: $location, wifiNetworkList: $wifiNetworkList, btDeviceInfoList: $btDeviceInfoList, deviceData: $deviceData, networkType: $networkType, installedAppList: $installedAppList, thirdPartyApps: $thirdPartyApps)';
     return 'UserDataInfo(location: $location, wifiNetworkList: $wifiNetworkList, btDeviceInfoList: $btDeviceInfoList, deviceData: $deviceData, networkType: $networkType, installedAppList: $installedAppList)';
   }
 }
-
-
-
-
-
